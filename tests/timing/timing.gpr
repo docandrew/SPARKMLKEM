@@ -1,0 +1,30 @@
+--  Constant-time harnesses for SPARKMLKEM: ctgrind (Valgrind memcheck
+--  taint) and dudect (Welch's t-test on rdtsc). Ada + C; the C side
+--  wraps the Valgrind client requests.
+
+with "../../sparkmlkem.gpr";
+
+project Timing is
+   for Create_Missing_Dirs use "True";
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Languages use ("Ada", "C");
+   for Source_Dirs use (".");
+   for Main use ("ct_negative_control.adb",
+                 "ct_keygen.adb",
+                 "ct_encaps.adb",
+                 "ct_decaps.adb",
+                 "ct_decaps_reject.adb",
+                 "dudect_negative_control.adb",
+                 "dudect_keygen.adb",
+                 "dudect_encaps.adb",
+                 "dudect_decaps_keys.adb",
+                 "dudect_decaps_reject.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        ("-O2", "-g", "-gnatp", "-gnat2022", "-march=x86-64-v2");
+      for Default_Switches ("C") use
+        ("-O2", "-g", "-march=x86-64-v2");
+   end Compiler;
+end Timing;

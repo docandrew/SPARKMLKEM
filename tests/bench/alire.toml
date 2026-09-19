@@ -1,0 +1,10 @@
+name = "sparkmlkem_bench"
+version = "0.0.0"
+description = "Cycle counts for ML-KEM-768 and ML-KEM-1024 operations"
+project-files = ["bench.gpr"]
+
+[[depends-on]]
+sparkmlkem = "*"
+
+[[pins]]
+sparkmlkem = { path = "../.." }

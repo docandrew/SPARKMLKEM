@@ -1,0 +1,10 @@
+name = "sparkmlkem_timing"
+version = "0.0.0"
+description = "Constant-time analysis harnesses for SPARKMLKEM"
+project-files = ["timing.gpr"]
+
+[[depends-on]]
+sparkmlkem = "*"
+
+[[pins]]
+sparkmlkem = { path = "../.." }

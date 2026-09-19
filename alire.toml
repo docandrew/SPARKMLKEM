@@ -1,0 +1,19 @@
+name = "sparkmlkem"
+description = "SPARK ML-KEM (FIPS 203) for SPARKTLS, from AWS LibFormalPQC (R. Chapman)"
+version = "0.0.1"
+licenses = "Apache-2.0"
+tags = ["spark", "cryptography", "post-quantum", "ml-kem", "kyber", "security"]
+
+# Upstream author of the ML-KEM implementation this crate derives from:
+# Rod Chapman and the AWS Labs team, https://github.com/awslabs/LibFormalPQC.
+# See NOTICE and CHANGES_FROM_UPSTREAM.md.
+authors = ["Rod Chapman (Amazon Web Services, upstream LibFormalPQC)", "Jon Andrew"]
+maintainers = ["Jon Andrew <jonfandrew@fastmail.com>"]
+maintainers-logins = ["docandrew"]
+
+[[depends-on]]
+gnatprove = "^16.0.0"
+[[depends-on]]
+gnat = "^16.0.0"
+[[depends-on]]
+libkeccak = "^3.0.0"

@@ -1,0 +1,117 @@
+--  SPARKMLKEM build project. Derived from mlkem.gpr in AWS LibFormalPQC
+--  (Copyright Amazon.com, Inc. or its affiliates, Apache-2.0), rewritten
+--  for the SPARKTLS crate conventions: Alire-managed libkeccak, sibling
+--  scenario variable names, no tasking variant, no RISC-V targets.
+
+with "config/sparkmlkem_config.gpr";
+with "libkeccak.gpr";
+library project SPARKMLKEM is
+
+   for Library_Name use "sparkmlkem";
+   for Library_Version use Project'Library_Name & ".so." & SPARKMLKEM_Config.Crate_Version;
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Create_Missing_Dirs use "True";
+   for Library_Dir use "lib";
+
+   type Library_Type_Type is ("relocatable", "static", "static-pic");
+   Library_Type : Library_Type_Type :=
+     external ("SPARKMLKEM_LIBRARY_TYPE", external ("LIBRARY_TYPE", "static"));
+   for Library_Kind use Library_Type;
+
+   type Enabled_Kind is ("enabled", "disabled");
+   Compile_Checks   : Enabled_Kind := External ("SPARKMLKEM_COMPILE_CHECKS", "enabled");
+   Runtime_Checks   : Enabled_Kind := External ("SPARKMLKEM_RUNTIME_CHECKS", "disabled");
+   Style_Checks     : Enabled_Kind := External ("SPARKMLKEM_STYLE_CHECKS", "enabled");
+   Contracts_Checks : Enabled_Kind := External ("SPARKMLKEM_CONTRACTS", "disabled");
+
+   type Build_Kind is ("debug", "optimize", "native", "ctgrind");
+   Build_Mode : Build_Kind := External ("SPARKMLKEM_BUILD_MODE", "optimize");
+
+   Compile_Checks_Switches := ();
+   case Compile_Checks is
+      when "enabled" =>
+         --  Upstream setting: all warnings, treated as errors, except
+         --  static conditional expressions (C), suspicious modulus (.M),
+         --  wrong-order parameters (.P), suspicious contracts (.T) and
+         --  exception propagation (.X).
+         Compile_Checks_Switches := ("-gnatwaeC.M.P.T.X");
+      when others => null;
+   end case;
+
+   Runtime_Checks_Switches := ();
+   case Runtime_Checks is
+      when "enabled" => null;
+      when others =>
+         Runtime_Checks_Switches := ("-gnatp");
+   end case;
+
+   Style_Checks_Switches := ();
+   case Style_Checks is
+      when "enabled" =>
+         --  Upstream setting: style checks on except distinct subprogram
+         --  declarations.
+         Style_Checks_Switches := ("-gnaty-s");
+      when others => null;
+   end case;
+
+   Contracts_Switches := ();
+   case Contracts_Checks is
+      when "enabled" =>
+         Contracts_Switches := ("-gnata", "-gnatVa");
+      when others => null;
+   end case;
+
+   Build_Switches := ();
+   case Build_Mode is
+      when "optimize" =>
+         Build_Switches := ("-O3", "-gnatn", "-march=x86-64-v2");
+      when "native" =>
+         Build_Switches := ("-O3", "-gnatn", "-march=native", "-mtune=native");
+      when "debug" =>
+         Build_Switches := ("-g", "-O0");
+      when "ctgrind" =>
+         Build_Switches := ("-O2", "-g", "-march=x86-64-v2", "-fno-tree-vectorize");
+   end case;
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        Compile_Checks_Switches &
+        Build_Switches &
+        Runtime_Checks_Switches &
+        Style_Checks_Switches &
+        Contracts_Switches &
+        ("-fstack-usage",
+         "-ffunction-sections",
+         "-fdata-sections",
+         "-gnatQ");
+      for Local_Configuration_Pragmas use "sparkmlkem.adc";
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es");
+   end Binder;
+
+   --  Upstream proof settings with three changes. COLIBRI is added to the
+   --  prover set: it is the solver that closes the power-of-two loop
+   --  invariants of NTT and NTT_Inv under GNATprove 16 (z3, cvc5 and
+   --  alt-ergo alone do not; upstream proved them with the SPARK 12
+   --  provers). The step budget is 200000 instead of 25000, with no
+   --  wall-clock timeout so the result does not depend on machine speed.
+   --  Per-prover memory is capped at 2000 MB instead of unlimited: with
+   --  -j0 on a many-core host, unlimited provers exhausted 128 GB.
+   package Prove is
+      for Proof_Switches ("Ada") use ("--proof=per_path",
+                                      "--no-global-generation",
+                                      "--no-inlining",
+                                      "--no-loop-unrolling",
+                                      "--level=1",
+                                      "--prover=z3,cvc5,altergo,colibri",
+                                      "--timeout=0",
+                                      "--memlimit=2000",
+                                      "--steps=200000",
+                                      "--report=statistics");
+   end Prove;
+
+end SPARKMLKEM;

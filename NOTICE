@@ -1,0 +1,20 @@
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+SPARKMLKEM
+==========
+
+SPARKMLKEM is a derivative of the SPARK/Ada ML-KEM (FIPS 203) implementation
+in LibFormalPQC (formerly LibMLKEM), written by Rod Chapman and the AWS Labs
+team at Amazon Web Services, and published under the Apache License 2.0 at
+https://github.com/awslabs/LibFormalPQC. The algorithm structure, the field
+arithmetic, the type design and the SPARK proofs of this crate are theirs.
+The changes made for the SPARKTLS project are listed in CHANGES_FROM_UPSTREAM.md
+and marked in the source headers of every modified file, as the Apache License
+2.0 section 4(b) requires.
+
+Additional work for the SPARKTLS project:
+Copyright (c) 2026 Jon Andrew.
+
+Both are licensed under the Apache License 2.0; see LICENSE.
+
+Third-party components are listed in THIRD-PARTY.
