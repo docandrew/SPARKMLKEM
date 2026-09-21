@@ -29,7 +29,12 @@ jobs:
       - name: Build and known-answer tests
         run: nix develop --command bash ci/check.sh
 
+  #  Proof is the LOCAL pre-commit gate (ci/proof.sh), as in every sibling
+  #  crate: gnatprove is not in the nix shell (alire fetches the gnatprove
+  #  crate on demand, which a fresh runner may not manage), and full proofs
+  #  are a poor fit for a 4-core runner. Kept runnable by hand.
   proof:
+    if: github.event_name == 'workflow_dispatch'
     env:
       ALR_NON_INTERACTIVE: "1"
       NO_COLOR: "1"

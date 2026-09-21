@@ -1,0 +1,10 @@
+name = "sparkmlkem_residue"
+version = "0.0.0"
+description = "Stack-residue scan of ML-KEM-768 keygen, encaps and decaps"
+project-files = ["residue.gpr"]
+
+[[depends-on]]
+sparkmlkem = "*"
+
+[[pins]]
+sparkmlkem = { path = "../.." }
