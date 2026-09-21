@@ -30,3 +30,7 @@ tests/bench/bin/
 tests/bench/obj/
 tests/bench/alire/
 tests/bench/config/
+tests/residue/bin/
+tests/residue/obj/
+tests/residue/alire/
+tests/residue/config/

@@ -29,6 +29,10 @@ exchange. On top of the upstream code this crate adds:
 - proof under GNATprove 16 with COLIBRI in the prover set (done);
 - constant-time evidence: ctgrind and dudect harnesses with planted-leak
   controls (done);
+- stack-residue evidence: after keygen, encaps or decaps returns, the
+  stack below the caller is scanned for fragments of the seeds, dk_pke,
+  the coins and the shared secret (`ci/residue.sh`, a CI gate with a
+  planted-leak control) (done);
 - NIST ACVP known-answer tests in addition to the upstream vectors (done);
 - the SPARKTLS crate conventions: Alire-managed libkeccak, `ci/` lanes,
   a Nix flake, hosted CI (done);
